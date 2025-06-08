@@ -9,3 +9,5 @@ django-formtools==2.5.1
 qrcode==7.4.2
 pillow==10.3.0
 django-widget-tweaks==1.4.12
+phonenumbers==9.0.6
+gunicorn==21.2.0
