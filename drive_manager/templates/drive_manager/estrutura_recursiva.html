@@ -1,0 +1,19 @@
+<ul class="list-group">
+    {% for item in itens %}
+        {% if item.mimeType == "application/vnd.google-apps.folder" %}
+            <li class="list-group-item list-group-item-secondary">
+                <span class="fw-bold">{{ item.name }}</span> (Pasta)
+                {% if item.itens %}
+                    <div class="ms-3 mt-2">
+                        {% include "drive_manager/estrutura_recursiva.html" with itens=item.itens %}
+                    </div>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ item.name }} (Arquivo)
+                <a href="{% url 'baixar_arquivo' item.id %}" class="btn btn-sm btn-success">Baixar</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>

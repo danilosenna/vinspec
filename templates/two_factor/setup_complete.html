@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>2FA Ativado com Sucesso</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5dd25;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+    .btn-login {
+      background-color: #033566;
+      color: #fff;
+      font-weight: 500;
+      border: none;
+    }
+    .btn-login:hover {
+      background-color: #719ef1c9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4 p-md-5 w-100" style="max-width: 480px;">
+      <div class="text-center">
+        <img src="{% static 'logo.png' %}" alt="Logo Nível Inspeções" class="mb-4 img-fluid" style="max-width: 150px;">
+        <h3 class="mb-3">Autenticação em Duas Etapas Ativada</h3>
+        <p class="text-darkgreen">Parabéns! A verificação em duas etapas foi configurada com sucesso.</p>
+        <a href="/account/login/" class="btn btn-login w-100 mt-3">Ir para o Login</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

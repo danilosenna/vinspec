@@ -1,0 +1,18 @@
+{% extends 'player_base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h4 class="text-center mb-4">Visualização de Arquivo</h4>
+
+    <div class="ratio ratio-4x3 mb-3">
+        <iframe src="{{ file_url }}" allowfullscreen></iframe>
+    </div>
+
+    <div class="text-center">
+        <a href="{% url origem %}" class="btn btn-secondary me-2">Voltar</a>
+        {% if pode_baixar %}
+        <a href="{% url 'baixar_foto' file_id %}" class="btn btn-success">Baixar</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

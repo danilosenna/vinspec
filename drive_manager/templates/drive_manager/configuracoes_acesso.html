@@ -1,0 +1,33 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Configuração de Acesso dos Usuários</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <table class="table table-bordered table-sm align-middle">
+            <thead class="table-light text-center">
+                <tr>
+                    <th>Usuário</th>
+                    <th>Acesso à Consulta</th>
+                    <th>Acesso aos Logs</th>
+                    <th>Botão de Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in forms %}
+                <tr>
+                    <td>{{ form.user.username }}</td>
+                    <td class="text-center">{{ form.consulta_permitida }}</td>
+                    <td class="text-center">{{ form.logs_permitidos }}</td>
+                    <td class="text-center">{{ form.download_permitido }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-3 text-center">
+            <button type="submit" class="btn btn-success">Salvar Configurações</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

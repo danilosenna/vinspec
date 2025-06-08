@@ -1,0 +1,192 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+  <h3 class="mb-4 text-center">Consulta de Fotos de Certificado</h3>
+
+  <form method="get" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Buscar por nome, número ou tipo de certificado">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+  </form>
+
+  {% if grupos %}
+  <div class="accordion" id="accordionCertificados">
+    {% for grupo in grupos %}
+      {% with chave=grupo.0 arquivos=grupo.1 %}
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
+            Certificado {{ chave }} ({{ arquivos|length }} arquivos)
+          </button>
+        </h2>
+        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#accordionCertificados">
+          <div class="accordion-body p-0">
+            <table class="table table-striped table-bordered mb-0">
+              <thead class="table-light text-center">
+                <tr>
+                  <th>Data</th>
+                  <th>Hora</th>
+                  <th>Arquivo</th>
+                  <th class="text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for arq in arquivos %}
+                <tr>
+                  <td class="text-center">{{ arq.data }}</td>
+                  <td class="text-center">{{ arq.hora }}</td>
+                  <td>
+                    {% if arq.name|lower|stringformat:"s"|slice:"-4:" == ".pdf" %}
+                      <img src="{% static 'img/pdf-icon.png' %}" alt="PDF" width="32" height="32" class="me-2">
+                    {% else %}
+                      <img src="https://drive.google.com/thumbnail?id={{ arq.id }}" alt="{{ arq.name }}" width="64" class="me-2 rounded border">
+                    {% endif %}
+                    {{ arq.name }}
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-primary"
+                      onclick="abrirModal('{{ chave }}', '{{ arq.id }}')"
+                      data-file-id="{{ arq.id }}"
+                      data-file-name="{{ arq.name }}"
+                      data-bs-toggle="modal"
+                      data-bs-target="#modalVisualizacao">
+                      Visualizar
+                    </button>
+                    {% if arq.pode_baixar %}
+                    <a href="{% url 'baixar_foto' arq.id %}" class="btn btn-sm btn-outline-success">Baixar</a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-warning text-center">Nenhum arquivo encontrado.</div>
+  {% endif %}
+  {% if grupos.has_other_pages %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if grupos.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ grupos.previous_page_number }}&search={{ search_query }}">Anterior</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+    {% endif %}
+
+    {% for num in grupos.paginator.page_range %}
+      {% if grupos.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}&search={{ search_query }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if grupos.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ grupos.next_page_number }}&search={{ search_query }}">Próxima</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalVisualizacao" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Visualização de Arquivo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <iframe id="iframePreview" src="" style="width:100%; height:80vh;" frameborder="0"></iframe>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button class="btn btn-outline-secondary" onclick="mostrarAnterior()">Anterior</button>
+        <button class="btn btn-outline-secondary" onclick="mostrarProximo()">Próximo</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const grupos = JSON.parse(`{{ grupos_json|safe }}`);
+  let arquivosGrupo = [];
+  let indexAtual = 0;
+
+  function abrirModal(grupoId, arquivoId) {
+    arquivosGrupo = grupos[grupoId] || [];
+    indexAtual = arquivosGrupo.findIndex(a => a.id === arquivoId);
+    mostrarArquivo(indexAtual);
+    const modalElement = document.getElementById('modalVisualizacao');
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modalInstance.show();
+  }
+
+  function mostrarArquivo(index) {
+    if (index < 0 || index >= arquivosGrupo.length) return;
+    const fileId = arquivosGrupo[index].id;
+    const fileUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+    document.getElementById('iframePreview').src = fileUrl;
+    indexAtual = index;
+  }
+
+  function mostrarAnterior() {
+    if (indexAtual > 0) {
+      mostrarArquivo(indexAtual - 1);
+    }
+  }
+
+  function mostrarProximo() {
+    if (indexAtual < arquivosGrupo.length - 1) {
+      mostrarArquivo(indexAtual + 1);
+    }
+  }
+</script>
+
+<script>
+  function registrarVisualizacao(fileId, fileName) {
+      fetch("{% url 'registrar_visualizacao_ajax' %}", {
+          method: 'POST',
+          headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: `file_id=${encodeURIComponent(fileId)}&file_name=${encodeURIComponent(fileName)}`
+      });
+  }
+  
+  function abrirModal(chave, fileId) {
+    const fileName = document.querySelector(`[data-file-id="${fileId}"]`)?.dataset.fileName || 'desconhecido';
+    registrarVisualizacao(fileId, fileName);
+
+    arquivosGrupo = grupos[chave] || [];
+    indexAtual = arquivosGrupo.findIndex(a => a.id === fileId);
+
+    const url = `https://drive.google.com/file/d/${fileId}/preview`;
+    document.getElementById('iframePreview').src = url;
+
+    const modalElement = document.getElementById('modalVisualizacao');
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modalInstance.show();
+}
+  </script>
+  
+{% endblock %}
+

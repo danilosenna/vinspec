@@ -1,0 +1,25 @@
+{% extends 'player_base.html' %}
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="container px-3 px-md-5">
+        <h3 class="mb-4 text-center">Visualização de Vídeo</h3>
+
+        <!-- Player Responsivo e centralizado -->
+        <div class="ratio ratio-16x9 rounded overflow-hidden shadow" id="videoWrapper">
+            <iframe
+                src="{{ video_url }}"
+                allow="autoplay"
+                allowfullscreen
+                frameborder="0"
+                style="width: 100%; height: 100%;"
+            ></iframe>
+        </div>
+
+        <!-- Botões -->
+        <div class="mt-4 text-center">
+            <a href="{% url origem %}" class="btn btn-secondary me-2">← Voltar</a>
+            <a href="{% url 'baixar_arquivo' file_id=file_id %}" class="btn btn-primary">⬇ Baixar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

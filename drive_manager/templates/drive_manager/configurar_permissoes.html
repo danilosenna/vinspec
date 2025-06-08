@@ -1,0 +1,59 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Configuração de Permissões</h1>
+
+    <style>
+        .permissao-card {
+            background-color: #e6f0ff; /* azul claro */
+            border: 1px solid #cce0ff;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .usuario-nome {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #003366; /* azul escuro */
+            background-color: #cce5ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-grid label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0;
+        }
+    </style>
+
+    {% for item in usuarios %}
+    <form method="post" class="permissao-card mb-4">
+        {% csrf_token %}
+        <div class="usuario-nome">{{ item.usuario.username }}</div>
+
+        <div class="checkbox-grid">
+            {% for field in item.form %}
+            <label>
+                {{ field }} {{ field.label }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <input type="hidden" name="user_id" value="{{ item.usuario.id }}">
+        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+    </form>
+    {% endfor %}
+</div>
+{% endblock %}

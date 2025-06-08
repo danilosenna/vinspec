@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste QR Code</title>
+</head>
+<body style="background: #f5dd25; text-align: center; font-family: sans-serif; padding-top: 50px;">
+    <h1>QR Code Gerado Manualmente</h1>
+    <p>Escaneie no Google Authenticator</p>
+    <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code">
+    <p>Código base (secret): <strong>{{ codigo }}</strong></p>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Estrutura de Pastas e Arquivos</title>
+    <style>
+        ul { list-style-type: none; }
+        li { margin: 5px 0; }
+        .folder { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Estrutura de Pastas e Arquivos do Google Drive</h1>
+    {% include "drive_manager/estrutura_recursiva.html" with itens=estrutura %}
+</body>
+</html>
